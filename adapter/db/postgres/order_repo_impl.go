@@ -7,20 +7,27 @@ import (
 )
 
 type orderRepoImpl struct {
-	conn *pg.Conn
+	pg *pg.DB
 }
 
-func NewOrderRepoImpl(postgresConn *pg.Conn) (*orderRepoImpl, error) {
+func NewOrderRepoImpl(pgDB *pg.DB) (*orderRepoImpl, error) {
 	return &orderRepoImpl{
-		conn: postgresConn,
+		pg: pgDB,
 	}, nil
 }
 
 func (r *orderRepoImpl) Find(search string) ([]model.Order, error) {
-	return nil, nil
+	var orders []model.Order
+	err := r.pg.Model(&orders).Select()
+	if err != nil {
+		return orders, err
+	}
+	return orders, nil
 }
 
 func (r *orderRepoImpl) FindById(id string) (*model.Order, error) {
+	order := &model.Order{}
+	r.pg.Model(order).WherePK()
 	return nil, nil
 }
 

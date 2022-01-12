@@ -3,7 +3,7 @@ package app
 type orderSvcApp struct {
 }
 
-type BaseService interface {
+type Service interface {
 	Init() error
 	Run() error
 }
