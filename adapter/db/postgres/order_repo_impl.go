@@ -1,6 +1,8 @@
 package postgres
 
 import (
+	"errors"
+
 	"github.com/go-pg/pg/v10"
 	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/domain/dto"
 	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/domain/model"
@@ -25,21 +27,25 @@ func (r *orderRepoImpl) Find(search string) ([]model.Order, error) {
 	return orders, nil
 }
 
-func (r *orderRepoImpl) FindById(id string) (*model.Order, error) {
+func (r *orderRepoImpl) FindById(id interface{}) (*model.Order, error) {
 	order := &model.Order{}
 	r.pg.Model(order).WherePK()
 	return nil, nil
 }
 
-func (r *orderRepoImpl) FindByIds(ids []string) ([]model.Order, error) {
+func (r *orderRepoImpl) FindByIds(ids []interface{}) ([]model.Order, error) {
 	return nil, nil
 }
 
-func (r *orderRepoImpl) Insert(data *dto.InsertOrderDto) (*model.Order, error) {
+func (r *orderRepoImpl) Insert(data interface{}) (*model.Order, error) {
+	orderData, ok := data.(*dto.InsertOrderDto)
+	if !ok {
+		return nil, errors.New("can't parse 'order payload' to value")
+	}
 	order := &model.Order{
-		CustomerId: data.CustomerId,
-		Total:      data.Total,
-		Status:     data.Status,
+		CustomerId: orderData.CustomerId,
+		Total:      orderData.Total,
+		Status:     orderData.Status,
 		OrderItems: []*model.OrderItem{},
 	}
 	tx, err := r.pg.Begin()
@@ -52,7 +58,7 @@ func (r *orderRepoImpl) Insert(data *dto.InsertOrderDto) (*model.Order, error) {
 		_ = tx.Rollback()
 		return nil, err
 	}
-	for _, v := range data.OrderItems {
+	for _, v := range orderData.OrderItems {
 		orderItem := &model.OrderItem{
 			OrderId:     order.Id,
 			ProductId:   v.ProductId,
@@ -72,10 +78,10 @@ func (r *orderRepoImpl) Insert(data *dto.InsertOrderDto) (*model.Order, error) {
 	return order, nil
 }
 
-func (r *orderRepoImpl) Update(id string, data *dto.UpdateOrderDto) (*model.Order, error) {
+func (r *orderRepoImpl) Update(id interface{}, data interface{}) (*model.Order, error) {
 	return nil, nil
 }
 
-func (r *orderRepoImpl) Delete(id string) (*model.Order, error) {
+func (r *orderRepoImpl) Delete(id interface{}) (*model.Order, error) {
 	return nil, nil
 }
