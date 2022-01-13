@@ -4,7 +4,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
+	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/adapter/db/postgres"
 	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/domain/model"
+	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/domain/usecase"
 	httpv1 "github.com/quyenphamkhac/saga-ecommerce-ordersvc/transport/http/v1"
 )
 
@@ -23,14 +25,16 @@ func main() {
 	}
 
 	r := gin.Default()
-	healthCtrl, err := httpv1.NewHealthCtrl()
-	if err != nil {
-		panic(err)
-	}
+	orderRepository := postgres.NewOrderRepoImpl(db)
+	orderUsecase := usecase.NewOrderUsecaseImpl(orderRepository)
+
+	healthCtrl := httpv1.NewHealthCtrl()
+	orderCtrl := httpv1.NewOrderCtrl(orderUsecase)
 
 	v1 := r.Group("/v1")
 	{
 		v1.GET("/health", healthCtrl.HealthEndpoint)
+		v1.POST("/orders", orderCtrl.PlaceOrderEndpoint)
 	}
 	r.Run()
 }

@@ -10,10 +10,10 @@ type orderRepoImpl struct {
 	pg *pg.DB
 }
 
-func NewOrderRepoImpl(pgDB *pg.DB) (*orderRepoImpl, error) {
+func NewOrderRepoImpl(pgDB *pg.DB) *orderRepoImpl {
 	return &orderRepoImpl{
 		pg: pgDB,
-	}, nil
+	}
 }
 
 func (r *orderRepoImpl) Find(search string) ([]model.Order, error) {

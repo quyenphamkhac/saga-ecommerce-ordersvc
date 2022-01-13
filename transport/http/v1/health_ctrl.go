@@ -8,8 +8,8 @@ import (
 
 type healthCtrl struct{}
 
-func NewHealthCtrl() (*healthCtrl, error) {
-	return &healthCtrl{}, nil
+func NewHealthCtrl() *healthCtrl {
+	return &healthCtrl{}
 }
 
 func (h *healthCtrl) HealthEndpoint(c *gin.Context) {
