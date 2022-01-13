@@ -7,13 +7,14 @@ type Order struct {
 	CustomerId int64
 	OrderItems []*OrderItem `pg:"rel:has-many"`
 	Total      int16
+	Status     string
 	CreatedAt  time.Time `pg:"default:now()"`
 	UpdatedAt  time.Time `pg:"default:now()"`
 }
 
 type OrderItem struct {
-	Id          int64
-	ProductId   int64
+	ProductId   int64 `pg:",pk"`
+	OrderId     int64 `pg:",pk"`
 	ProductName string
 	Quantity    int16
 	Price       int16
