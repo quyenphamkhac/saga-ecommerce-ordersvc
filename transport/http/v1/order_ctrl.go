@@ -20,12 +20,12 @@ func NewOrderCtrl(usecase usecase.OrderUsecase) *orderCtrl {
 }
 
 func (ctrl *orderCtrl) PlaceOrderEndpoint(c *gin.Context) {
-	var data *dto.PlaceOrderDto
-	if err := c.ShouldBindJSON(data); err != nil {
+	var data dto.PlaceOrderDto
+	if err := c.ShouldBindJSON(&data); err != nil {
 		c.Error(httperrors.New(http.StatusBadRequest, err.Error()))
 		return
 	}
-	order, err := ctrl.usecase.PlaceOrder(data)
+	order, err := ctrl.usecase.PlaceOrder(&data)
 	if err != nil {
 		c.Error(httperrors.New(http.StatusInternalServerError, err.Error()))
 		return

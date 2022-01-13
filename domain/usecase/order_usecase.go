@@ -22,7 +22,13 @@ func NewOrderUsecaseImpl(repo repository.OrderRepository) *orderUsecaseImpl {
 }
 
 func (u *orderUsecaseImpl) PlaceOrder(data *dto.PlaceOrderDto) (*model.Order, error) {
-	return nil, nil
+	insertData := &dto.InsertOrderDto{
+		CustomerId: data.CustomerId,
+		Total:      data.Total,
+		Status:     "ORDER_PROCESSING_COMPLETED",
+		OrderItems: data.OrderItems,
+	}
+	return u.repo.Insert(insertData)
 }
 
 func (u *orderUsecaseImpl) CancelOrder(data *dto.CancelOrderDto) (*model.Order, error) {

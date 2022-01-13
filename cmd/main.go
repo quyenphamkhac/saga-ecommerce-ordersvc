@@ -7,6 +7,7 @@ import (
 	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/adapter/db/postgres"
 	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/domain/model"
 	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/domain/usecase"
+	httpmdw "github.com/quyenphamkhac/saga-ecommerce-ordersvc/middleware/http"
 	httpv1 "github.com/quyenphamkhac/saga-ecommerce-ordersvc/transport/http/v1"
 )
 
@@ -25,6 +26,8 @@ func main() {
 	}
 
 	r := gin.Default()
+	r.Use(httpmdw.ErrorsMiddleware(gin.ErrorTypeAny))
+
 	orderRepository := postgres.NewOrderRepoImpl(db)
 	orderUsecase := usecase.NewOrderUsecaseImpl(orderRepository)
 
