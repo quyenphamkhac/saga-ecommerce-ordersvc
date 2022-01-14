@@ -6,6 +6,7 @@ import (
 
 type Config struct {
 	PostgresDB
+	RabbitMQ
 }
 
 type PostgresDB struct {
@@ -15,8 +16,16 @@ type PostgresDB struct {
 	Database string `mapstructure:"ORDERSVC_POSTGRESDB_DATABASE"`
 }
 
+type RabbitMQ struct {
+	User     string `mapstructure:"ORDERSVC_RABBITMQ_USER"`
+	Password string `mapstructure:"ORDERSVC_RABBITMQ_PASSWORD"`
+	Host     string `mapstructure:"ORDERSVC_RABBITMQ_HOST"`
+	Port     string `mapstructure:"ORDERSVC_RABBITMQ_PORT"`
+}
+
 func NewServiceConfig() (*Config, error) {
 	v, err := loadConfig()
+	v.SetDefault("rabbitmq.user", "")
 	if err != nil {
 		return nil, err
 	}

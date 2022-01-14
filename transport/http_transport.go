@@ -2,20 +2,16 @@ package transport
 
 import (
 	"log"
-	"sync"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-pg/pg/v10"
-	"github.com/go-pg/pg/v10/orm"
-	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/adapter/db/postgres"
+	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/adapter/datastore/postgres"
+	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/pkg/postgresql"
+
 	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/config"
-	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/domain/model"
 	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/domain/usecase"
 	httpv1 "github.com/quyenphamkhac/saga-ecommerce-ordersvc/endpoint/http/v1"
 	httpmdw "github.com/quyenphamkhac/saga-ecommerce-ordersvc/middleware/http"
 )
-
-var initDBConnOnce sync.Once
 
 type httpServer struct {
 	cfg *config.Config
@@ -28,9 +24,9 @@ func NewHttpServer(cfg *config.Config) *httpServer {
 }
 
 func (s *httpServer) Run(addr string) {
-	db := initDBConn(s.cfg)
+	db := postgresql.NewPostgresqlDBConn(s.cfg)
 	defer db.Close()
-	err := createDBSchema(db)
+	err := postgresql.CreatePostgresqlDBSchema(db)
 	if err != nil {
 		panic(err)
 	}
@@ -53,34 +49,4 @@ func (s *httpServer) Run(addr string) {
 			log.Println("run http server failed")
 		}
 	}()
-}
-
-func initDBConn(cfg *config.Config) *pg.DB {
-	var conn *pg.DB
-	initDBConnOnce.Do(func() {
-		conn = pg.Connect(&pg.Options{
-			User:     cfg.PostgresDB.User,
-			Password: cfg.PostgresDB.Password,
-			Addr:     cfg.PostgresDB.Addr,
-			Database: cfg.PostgresDB.Database,
-		})
-	})
-	return conn
-}
-
-func createDBSchema(db *pg.DB) error {
-	models := []interface{}{
-		(*model.Order)(nil),
-		(*model.OrderItem)(nil),
-	}
-	for _, model := range models {
-		err := db.Model(model).CreateTable(&orm.CreateTableOptions{
-			IfNotExists:   true,
-			FKConstraints: true,
-		})
-		if err != nil {
-			return err
-		}
-	}
-	return nil
 }
