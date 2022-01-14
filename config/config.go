@@ -1,8 +1,6 @@
 package config
 
 import (
-	"fmt"
-
 	"github.com/spf13/viper"
 )
 
@@ -22,7 +20,6 @@ func NewServiceConfig() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(v.AllKeys())
 	c, err := parseConfig(v)
 	if err != nil {
 		return nil, err

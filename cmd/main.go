@@ -6,8 +6,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/app"
 	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/config"
+	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/transport"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 		panic(err)
 	}
 
-	httpServer := app.NewHttpServer(cfg)
+	httpServer := transport.NewHttpServer(cfg)
 	httpServer.Run(":3000")
 
 	quit := make(chan os.Signal, 1)

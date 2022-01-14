@@ -1,7 +1,6 @@
-package app
+package transport
 
 import (
-	"fmt"
 	"log"
 	"sync"
 
@@ -12,8 +11,8 @@ import (
 	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/config"
 	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/domain/model"
 	"github.com/quyenphamkhac/saga-ecommerce-ordersvc/domain/usecase"
+	httpv1 "github.com/quyenphamkhac/saga-ecommerce-ordersvc/endpoint/http/v1"
 	httpmdw "github.com/quyenphamkhac/saga-ecommerce-ordersvc/middleware/http"
-	httpv1 "github.com/quyenphamkhac/saga-ecommerce-ordersvc/transport/http/v1"
 )
 
 var initDBConnOnce sync.Once
@@ -58,7 +57,6 @@ func (s *httpServer) Run(addr string) {
 
 func initDBConn(cfg *config.Config) *pg.DB {
 	var conn *pg.DB
-	fmt.Println(cfg.PostgresDB)
 	initDBConnOnce.Do(func() {
 		conn = pg.Connect(&pg.Options{
 			User:     cfg.PostgresDB.User,
